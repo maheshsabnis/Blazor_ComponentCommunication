@@ -1,5 +1,78 @@
-﻿<h3>Component1</h3>
-
+﻿@page "/employeecomponent"
+@using Blazor_ComponentCommunication.Models
+<h3>Employee Component</h3>
+<EditForm Model="@employee" OnValidSubmit="@save">
+    <div class="container">
+        <div class="form-group">
+            <label>Employee No.</label>
+            <InputNumber @bind-Value="@employee.EmpNo" class="form-control"></InputNumber>
+        </div>
+        <div class="form-group">
+            <label>Employee Name</label>
+            <InputText @bind-Value="@employee.EmpName" class="form-control"></InputText>
+        </div>
+        <div class="form-group">
+            <label>Designation</label>
+            <InputSelect @bind-Value="@employee.Designation" class="form-control">
+                @foreach (var item in designations)
+                {
+                    <option value="@item">@item</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="form-group">
+            <label>Salary</label>
+            <InputNumber @bind-Value="@employee.Salary" class="form-control"></InputNumber>
+        </div>
+        <div class="form-group">
+            <label>Department</label>
+            <InputSelect @bind-Value="@employee.DeptName" class="form-control">
+                @foreach (var item in departments)
+                {
+                    <option value="@item">@item</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="form-group">
+            <input type="button" value="Clear" class="btn btn-warning" @onclick="@clear"/>
+            <input type="button" value="Save" class="btn btn-success" @onclick="@save"/>
+        </div>
+    </div>
+</EditForm>
+ <hr/>
+@foreach (var emp in employees)
+{
+    <EmployeeDetails  employee="emp"
+                      OnEmployeeSelected="@receiveEmployee"></EmployeeDetails>
+}
 @code {
+    private Employee employee;
+    private Employees employees;
+    List<string> designations = new List<string>()
+    {
+        "Manager", "Director", "Engineer", "Architect"
+    };
+    List<string> departments = new List<string>()
+    {
+        "IT", "HRD", "SALES"
+    };
 
+    protected override void OnInitialized()
+    {
+        employee = new Employee();
+        employees = new Employees();
+        base.OnInitialized();
+    }
+    void clear()
+    {
+        employee = new Employee();
+    }
+    void save()
+    {
+        employees.Add(employee);
+    }
+    void receiveEmployee(int id)
+    {
+        employee = employees.Where(e => e.EmpNo == id).FirstOrDefault();
+    }
 }
